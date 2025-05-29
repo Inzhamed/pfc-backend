@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import users, defects, reports, notifications
+from app.routes import users, defects, reports, notifications, auth
 
 app = FastAPI()
 
@@ -19,3 +19,4 @@ app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(defects.router, prefix="/api/defects", tags=["defects"])
 app.include_router(reports.router, prefix="/api/reports", tags=["reports"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
+app.include_router(auth.router, prefix="/api/login", tags=["auth"])

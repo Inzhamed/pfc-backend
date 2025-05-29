@@ -2,6 +2,7 @@ from typing import List, Optional
 from bson import ObjectId
 from datetime import datetime
 from app.models import User, Defect, Notification, Report
+from app.utils import hash_password
 from app.db import db
 
 SEVERITY_MAP = {
@@ -25,8 +26,19 @@ def fix_mongo_ids_and_severity(documents):
 # --- USER CRUD ---
 def create_user(user: User):
     user_dict = user.dict(by_alias=True, exclude_unset=True)
+    if db.users.find_one({"email": user_dict["email"]}):
+        raise ValueError("Email already registered")
+    # Use provided password or default
+    password = user_dict.get("password") or "password123"
+    user_dict["password_hash"] = hash_password(password)
+    user_dict.pop("password", None)  # Remove plain password
     result = db.users.insert_one(user_dict)
-    return str(result.inserted_id)
+    return str(result.inserted_id)  
+
+# get all users
+def list_users() -> List[dict]:
+    users = list(db.users.find())
+    return fix_mongo_ids_and_severity(users)
 
 def get_user_by_email(email: str) -> Optional[dict]:
     user = db.users.find_one({"email": email})
@@ -37,6 +49,10 @@ def get_user_by_id(user_id: str) -> Optional[dict]:
     return fix_mongo_id_and_severity(user)
 
 def update_user(user_id: str, update_data: dict):
+    # If password is being updated, hash it and update password_hash instead
+    if "password" in update_data:
+        from app.utils import hash_password
+        update_data["password_hash"] = hash_password(update_data.pop("password"))
     result = db.users.update_one({"_id": ObjectId(user_id)}, {"$set": update_data})
     return {"matched_count": result.matched_count, "modified_count": result.modified_count}
 
@@ -88,6 +104,7 @@ def delete_notification(notification_id: str):
 def create_report(report: Report):
     report_dict = report.dict(by_alias=True, exclude_unset=True)
     result = db.reports.insert_one(report_dict)
+    update_defect(report.defect_id, {"status": "resolved"})
     return str(result.inserted_id)
 
 def get_report_by_id(report_id: str) -> Optional[dict]:
@@ -96,6 +113,10 @@ def get_report_by_id(report_id: str) -> Optional[dict]:
 
 def list_reports_for_defect(defect_id: str) -> List[dict]:
     reports = list(db.reports.find({"defect_id": defect_id}))
+    return fix_mongo_ids_and_severity(reports)
+
+def list_reports() -> List[dict]:
+    reports = list(db.reports.find())
     return fix_mongo_ids_and_severity(reports)
 
 def update_report(report_id: str, update_data: dict):

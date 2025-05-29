@@ -7,8 +7,9 @@ class User(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
     username: str
     email: EmailStr
-    password_hash: str
-    role: str = "operator"
+    password_hash: Optional[str] = None
+    password: Optional[str] = None
+    role: str # e.g., "admin", "technician"
     language: Optional[str] = "en"
     notifications: Optional[Dict[str, bool]] = {
         "email": True,

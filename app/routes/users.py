@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.models import User
-from app.crud import create_user, get_user_by_email, get_user_by_id, update_user, delete_user
+from app.crud import create_user, get_user_by_email, get_user_by_id, update_user, delete_user, list_users
+from app.utils import require_role
 
 router = APIRouter()
 
@@ -9,6 +10,10 @@ def api_create_user(user: User):
     if get_user_by_email(user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
     return create_user(user)
+
+@router.get("/", response_model=list[User])
+def api_get_users():
+    return list_users()
 
 @router.get("/{user_id}", response_model=User)
 def api_get_user(user_id: str):
