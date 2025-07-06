@@ -7,7 +7,7 @@ db = client["railwaydefectsapp"]
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-hashed_password = pwd_context.hash("password123")  # Replace with your desired password
+hashed_password = pwd_context.hash("....")  # Replace with your desired password
 
 # User document
 user = {
