@@ -5,11 +5,11 @@ from fastapi.staticfiles import StaticFiles
 from app.routes import users, defects, reports, notifications, auth
 
 app = FastAPI()
-app.mount(
-    "/static",
-    StaticFiles(directory="../pfc-desktop-pyqt/static"),
-    name="static"
-)
+# app.mount(
+#     "/static",
+#     StaticFiles(directory="../pfc-desktop-pyqt/static"),
+#     name="static"
+# )
 
 # Allow CORS for your frontend (adjust the origin in production)
 app.add_middleware(
