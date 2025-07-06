@@ -49,10 +49,12 @@ def get_user_by_id(user_id: str) -> Optional[dict]:
     return fix_mongo_id_and_severity(user)
 
 def update_user(user_id: str, update_data: dict):
-    # If password is being updated, hash it and update password_hash instead
     if "password" in update_data:
         from app.utils import hash_password
         update_data["password_hash"] = hash_password(update_data.pop("password"))
+    if "notifications" in update_data:
+        db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"notifications": update_data["notifications"]}})
+        update_data.pop("notifications")
     result = db.users.update_one({"_id": ObjectId(user_id)}, {"$set": update_data})
     return {"matched_count": result.matched_count, "modified_count": result.modified_count}
 

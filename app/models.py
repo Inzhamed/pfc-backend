@@ -19,14 +19,14 @@ class User(BaseModel):
 class Location(BaseModel):
     lat: float
     lng: float
-    trackId: str
-    mileMarker: float
+    trackId: Optional[str] = "DZ07"  
+    mileMarker: Optional[float] = 0.0  
 
 # Defect schema
 class Defect(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
     type: str
-    severity: str
+    severity: Optional[str] = "high"  # e.g., "low", "medium", "high"
     location: Location
     status: str = "open"
     image_url: Optional[str]
