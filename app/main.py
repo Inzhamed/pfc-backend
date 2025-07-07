@@ -14,7 +14,7 @@ app = FastAPI()
 # Allow CORS for your frontend (adjust the origin in production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://inzhamed.github.io/pfc/"],  # Replace "*" with your frontend URL in production
+    allow_origins=["*"],  # Replace "*" with your frontend URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
